@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  appsmith:
+    image: index.docker.io/appsmith/appsmith-ce
+    container_name: appsmith
+    ports:
+      - "80:80"
+      - "443:443"
+      - "9001:9001"
+    volumes:
+      - ./stacks:/appsmith-stacks
+    environment:
+      - APPSMITH_REDIS_URL=redis://redis:6379
+      - APPSMITH_MONGODB_URL=mongodb://mongo/appsmith
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - redis
+
+  mongo:
+    image: mongo:4.4.6
+    container_name: appsmith-mongodb
+    volumes:
+      - ./data/mongo:/data/db
+    restart: unless-stopped
+
+  redis:
+    image: redis:6.2.0
+    container_name: appsmith-redis
+    volumes:
+      - ./data/redis:/data
+    restart: unless-stopped
